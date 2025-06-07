@@ -4,14 +4,19 @@ const io = new Server({
     cors: "http://localhost:5173"
 });
 
-
-io.on('connection' , function (socket) {
-  socket.on("canvasImage", (data) => {
-    console.log("Broadcasting canvasImage...");
-    socket.broadcast.emit('canvasImage', data);
-});
+let currentCanvas = null;
+io.on('connection', function (socket) {
+    console.log("NEW CLIENT CONNECTED " , socket.id);
+    if(currentCanvas){
+        socket.emit('canvasImage' , currentCanvas)
+    }
+    socket.on("canvasImage", (data) => {
+        currentCanvas = data;
+        console.log("Broadcasting canvasImage...");
+        socket.broadcast.emit('canvasImage', data);
+    });
 })
 
 
-io.listen(5000);    
+io.listen(5000);
 console.log(io);

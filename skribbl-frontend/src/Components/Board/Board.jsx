@@ -41,7 +41,7 @@ const Board = ()  => {
                 socketRef.current.off('canvasImage', handleCanvasImage)
             }
         }
-    } , [])
+    } , [socketRef.current])
 
 
 
