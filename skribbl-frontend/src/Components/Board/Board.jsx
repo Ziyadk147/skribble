@@ -1,11 +1,47 @@
 import { useEffect, useRef , useState } from "react"
 import { Toolbar } from "../Toolbar/Toolbar";
+import { io } from "socket.io-client";
 const Board = ()  => {
     const canvasRef = useRef(null);
 
     const colors = ['black', 'red', 'blue', 'green', 'orange'];
     const [color, setColor] = useState('black');
+    const [socket , setSocket ] = useState(null);
 
+    const socketRef = useRef(null);
+
+    useEffect(() => {
+        socketRef.current = io('http://localhost:5000/');
+        console.log(socketRef.current , "Connected to Socket");
+        return () => {
+            socketRef.current.disconnect();
+        }
+    } , []);
+
+
+    useEffect(() => {
+        if(socketRef.current) {
+            const handleCanvasImage = (data) => {
+                const image = new Image()
+                image.src = data;
+
+                const canvas = canvasRef.current;
+                const context = canvas.getContext('2d');
+
+                image.onload = () => {
+                    // Clear canvas first
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Now draw the new image (which might be empty if cleared)
+                    context.drawImage(image, 0, 0);
+                };
+            }
+            socketRef.current.on('canvasImage' ,handleCanvasImage);
+            return () => {
+                socketRef.current.off('canvasImage', handleCanvasImage)
+            }
+        }
+    } , [])
 
 
 
@@ -30,7 +66,12 @@ const Board = ()  => {
     }, []);
 
 
-
+    const sendDataToSocket = (data) => {
+        if(socketRef.current){
+            socketRef.current.emit("canvasImage" , data);
+            console.log("Data emitted")
+        }
+    }
     useEffect(() => {
         //drawing states
         let isDrawing = false;
@@ -81,7 +122,17 @@ const Board = ()  => {
         
         }
         const endDrawing = () => {
+            const canvas = canvasRef.current;
+            const dataUrl = canvas.toDataURL();
+            if(socketRef.current){
+                socketRef.current.emit("canvasImage" , dataUrl);
+                console.log("Drawing Ended")
+
+            }
+            // console.log(socket)
             isDrawing = false;
+
+
         };
      
         const handleMouseDown = (e) => startDrawing(e.clientX , e.clientY);
@@ -132,6 +183,7 @@ const Board = ()  => {
         const context = canvas.getContext("2d");
 
         context.clearRect(0 ,  0 , 1500 , 600)
+        sendDataToSocket(canvasRef.current.toDataURL())
     } 
 
     return (
