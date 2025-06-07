@@ -1,10 +1,35 @@
-import { useEffect, useRef , useState} from "react"
+import { useEffect, useRef , useState } from "react"
 import { Toolbar } from "../Toolbar/Toolbar";
 const Board = ()  => {
     const canvasRef = useRef(null);
 
     const colors = ['black', 'red', 'blue', 'green', 'orange'];
     const [color, setColor] = useState('black');
+
+
+
+
+    const [windowSize, setWindowSize] = useState([
+        window.innerWidth,
+        window.innerHeight,
+    ]);
+
+
+    useEffect(() => {
+        const handleWindowResize = () => {
+            setWindowSize([window.innerWidth, window.innerHeight]);
+        };
+
+
+        window.addEventListener('resize', handleWindowResize);
+
+
+        return () => {
+            window.removeEventListener('resize', handleWindowResize);
+        };
+    }, []);
+
+
 
     useEffect(() => {
         //drawing states
@@ -112,13 +137,12 @@ const Board = ()  => {
     return (
         <div className="flex flex-col justify-center py-4 w-full items-center">
             <div className="flex flex-row">
-                <canvas
+                 <canvas
                     ref={canvasRef}
-                    width={1500}
-                    height={600}
+                    width={windowSize[0] > 600 ? 600 : 300}
+                    height={windowSize[1] > 400 ? 400 : 200}
                     className="bg-white"
-                >   
-                </canvas>
+                />
             </div>
             <div className="flex flex-row w-full">
                 <Toolbar 
