@@ -1,8 +1,10 @@
-import { useEffect, useRef } from "react"
-
+import { useEffect, useRef , useState} from "react"
+import { Toolbar } from "../Toolbar/Toolbar";
 const Board = ()  => {
     const canvasRef = useRef(null);
 
+    const colors = ['black', 'red', 'blue', 'green', 'orange'];
+    const [color, setColor] = useState('black');
 
     useEffect(() => {
         //drawing states
@@ -15,7 +17,7 @@ const Board = ()  => {
 
         if(!canvas || !context) return;
 
-        context.strokeStyle = 'black';
+        context.strokeStyle = color;
         context.lineWidth = 5;
         context.linecap = "round";
         context.lineJoin = 'round';
@@ -98,21 +100,39 @@ const Board = ()  => {
                 canvas.removeEventListener('touchcancel', handleTouchStop);
             }
         }
-    } , [])
+    } , [color])
+
+    const clearCanvas = () => {
+        const canvas = canvasRef.current;
+        const context = canvas.getContext("2d");
+
+        context.clearRect(0 ,  0 , 1500 , 600)
+    } 
 
     return (
         <div className="flex flex-col justify-center py-4 w-full items-center">
-            <canvas
-                ref={canvasRef}
-                width={1500}
-                height={600}
-                className="bg-white"
-            >   
-            </canvas>
+            <div className="flex flex-row">
+                <canvas
+                    ref={canvasRef}
+                    width={1500}
+                    height={600}
+                    className="bg-white"
+                >   
+                </canvas>
+            </div>
+            <div className="flex flex-row w-full">
+                <Toolbar 
+                    clearCanvas={clearCanvas}
+                    setColor={setColor}
+                    color={color}
+                    colors={colors}
+                />
+            </div>
+            
         </div>
 
     )
 }
 
 
-export {Board}
+export { Board }
