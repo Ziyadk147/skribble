@@ -1,21 +1,16 @@
-import { useEffect, useRef , useState } from "react"
+import { useContext, useEffect, useRef , useState } from "react"
 import { Toolbar } from "../Toolbar/Toolbar";
 import { io } from "socket.io-client";
+import { SocketContext } from "../../Context/SocketContext";
 const Board = ()  => {
     const canvasRef = useRef(null);
 
     const colors = ['black', 'red', 'blue', 'green', 'orange'];
     const [color, setColor] = useState('black');
-    const [socket , setSocket ] = useState(null);
 
-    const socketRef = useRef(null);
-
+    const {socketRef, connectSocketServer} = useContext(SocketContext)
     useEffect(() => {
-        socketRef.current = io('http://localhost:5000/');
-        console.log(socketRef.current , "Connected to Socket");
-        return () => {
-            socketRef.current.disconnect();
-        }
+        connectSocketServer("http://localhost:5000/")
     } , []);
 
 

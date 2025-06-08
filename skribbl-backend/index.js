@@ -5,11 +5,19 @@ const io = new Server({
 });
 
 let currentCanvas = null;
+let gamePlayers = [{}];
+
 io.on('connection', function (socket) {
     console.log("NEW CLIENT CONNECTED " , socket.id);
     if(currentCanvas){
         socket.emit('canvasImage' , currentCanvas)
     }
+    socket.on("playerJoin" , (data) => {
+        gamePlayers = [...gamePlayers , {
+            name: data.name,
+        }]
+        socket.broadcast.emit("playerJoin" , data);
+    })
     socket.on("canvasImage", (data) => {
         currentCanvas = data;
         console.log("Broadcasting canvasImage...");
