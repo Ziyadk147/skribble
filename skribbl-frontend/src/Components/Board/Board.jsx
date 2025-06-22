@@ -1,11 +1,38 @@
-import { useEffect, useRef , useState } from "react"
+import { useContext, useEffect, useRef , useState } from "react"
 import { Toolbar } from "../Toolbar/Toolbar";
+import { io } from "socket.io-client";
+import { SocketContext } from "../../Context/SocketContext";
 const Board = ()  => {
     const canvasRef = useRef(null);
 
     const colors = ['black', 'red', 'blue', 'green', 'orange'];
     const [color, setColor] = useState('black');
 
+    const {socketRef} = useContext(SocketContext)
+
+    useEffect(() => {
+        if(socketRef.current?.connected) {
+            const handleCanvasImage = (data) => {
+                const image = new Image()
+                image.src = data;
+
+                const canvas = canvasRef.current;
+                const context = canvas.getContext('2d');
+
+                image.onload = () => {
+                    // Clear canvas first
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Now draw the new image (which might be empty if cleared)
+                    context.drawImage(image, 0, 0);
+                };
+            }
+            socketRef.current.on('canvasImage' ,handleCanvasImage);
+            return () => {
+                socketRef.current.off('canvasImage', handleCanvasImage)
+            }
+        }
+    } , [socketRef.current])
 
 
 
@@ -30,7 +57,12 @@ const Board = ()  => {
     }, []);
 
 
-
+    const sendDataToSocket = (data) => {
+        if(socketRef.current?.connected){
+            socketRef.current.emit("canvasImage" , data);
+            console.log("Data emitted")
+        }
+    }
     useEffect(() => {
         //drawing states
         let isDrawing = false;
@@ -64,7 +96,13 @@ const Board = ()  => {
             const {lastX , lastY} = getOffset(x , y);
             context.beginPath();
             context.moveTo(lastX , lastY); //reset the coordinates on each stroke
-       
+            const canvas = canvasRef.current;
+            const dataUrl = canvas.toDataURL();
+            if(socketRef.current){
+                socketRef.current.emit("canvasImage" , dataUrl);
+                console.log("Drawing Ended")
+
+            }
 
         }
 
@@ -78,10 +116,27 @@ const Board = ()  => {
             
             lastX = position.x;
             lastY = position.y;
+            const canvas = canvasRef.current;
+            const dataUrl = canvas.toDataURL();
+            if(socketRef.current){
+                socketRef.current.emit("canvasImage" , dataUrl);
+                console.log("Drawing Ended")
+
+            }
         
         }
         const endDrawing = () => {
+            const canvas = canvasRef.current;
+            const dataUrl = canvas.toDataURL();
+            if(socketRef.current){
+                socketRef.current.emit("canvasImage" , dataUrl);
+                console.log("Drawing Ended")
+
+            }
+            // console.log(socket)
             isDrawing = false;
+
+
         };
      
         const handleMouseDown = (e) => startDrawing(e.clientX , e.clientY);
@@ -132,6 +187,7 @@ const Board = ()  => {
         const context = canvas.getContext("2d");
 
         context.clearRect(0 ,  0 , 1500 , 600)
+        sendDataToSocket(canvasRef.current.toDataURL())
     } 
 
     return (
