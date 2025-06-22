@@ -96,7 +96,13 @@ const Board = ()  => {
             const {lastX , lastY} = getOffset(x , y);
             context.beginPath();
             context.moveTo(lastX , lastY); //reset the coordinates on each stroke
-       
+            const canvas = canvasRef.current;
+            const dataUrl = canvas.toDataURL();
+            if(socketRef.current){
+                socketRef.current.emit("canvasImage" , dataUrl);
+                console.log("Drawing Ended")
+
+            }
 
         }
 
@@ -110,6 +116,13 @@ const Board = ()  => {
             
             lastX = position.x;
             lastY = position.y;
+            const canvas = canvasRef.current;
+            const dataUrl = canvas.toDataURL();
+            if(socketRef.current){
+                socketRef.current.emit("canvasImage" , dataUrl);
+                console.log("Drawing Ended")
+
+            }
         
         }
         const endDrawing = () => {
