@@ -1,4 +1,8 @@
-const PlayerIndividualCard = () => {
+import { useContext } from "react"
+import { SocketContext } from "../../Context/SocketContext"
+
+const PlayerIndividualCard = ({playerName}) => {
+    const {username} = useContext(SocketContext);
     return (
         <div className="flex flex-row mt-4">
             <div className="flex flex-col">
@@ -8,7 +12,7 @@ const PlayerIndividualCard = () => {
             </div>
             <div className="flex flex-col mx-2">
                 <div className="flex-row flex">
-                    <span className="font-extrabold">Ziyad Khan</span>
+                    <span className="font-extrabold">{playerName}</span>
                 </div>
                 <div className="flex-row flex m-0">
                     <span className="text-sm">Score: 1025</span>

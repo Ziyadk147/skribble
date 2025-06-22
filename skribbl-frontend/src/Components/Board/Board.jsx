@@ -8,14 +8,10 @@ const Board = ()  => {
     const colors = ['black', 'red', 'blue', 'green', 'orange'];
     const [color, setColor] = useState('black');
 
-    const {socketRef, connectSocketServer} = useContext(SocketContext)
-    useEffect(() => {
-        connectSocketServer("http://localhost:5000/")
-    } , []);
-
+    const {socketRef} = useContext(SocketContext)
 
     useEffect(() => {
-        if(socketRef.current) {
+        if(socketRef.current?.connected) {
             const handleCanvasImage = (data) => {
                 const image = new Image()
                 image.src = data;
@@ -62,7 +58,7 @@ const Board = ()  => {
 
 
     const sendDataToSocket = (data) => {
-        if(socketRef.current){
+        if(socketRef.current?.connected){
             socketRef.current.emit("canvasImage" , data);
             console.log("Data emitted")
         }

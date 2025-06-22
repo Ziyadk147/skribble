@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Colorpicker } from "../ColorPicker/ColorPicker";
 const Toolbar = ({clearCanvas , colors, color , setColor}) => {
     
-    console.log(clearCanvas)
     return ( 
         <div className="flex flex-row justify-center items-baseline  w-full mt-2">
             <div className="flex flex-col ">
