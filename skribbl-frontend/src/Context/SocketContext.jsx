@@ -28,16 +28,10 @@ export const SocketProvider = ({ children }) => {
     }
   }, []);
 
-  const handleAddMessage = useCallback((data) => {
-    setMessages((prev) => {
-      const alreadyExists = prev.some(p => p.socketid === data.socketid);
-      if(!alreadyExists){
-        return  [...prev, data]
-      }
-      return prev;
-    });
+const handleAddMessage = useCallback((data) => {
+  setMessages((prev) => [...prev, data]);
+}, []);
 
-  } , [])
   const handleRemovePlayer = useCallback( (data) => {
     setAllPlayers((prev) => prev.filter((item) => item.socketid !== data.socketid));
   } , [])

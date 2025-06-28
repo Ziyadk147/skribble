@@ -49,6 +49,7 @@ function App() {
       socket.off("playerJoin", handlePlayerJoin);
       socket.off("playerLeft");
       socket.off("currentPlayers");
+      socket.off('messageUpdate');
     };
   }, [socketRef, handleAddPlayer, handleRemovePlayer, handleTallyPlayers]);
 
