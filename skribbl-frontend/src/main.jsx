@@ -5,9 +5,9 @@ import App from './App.jsx'
 
 import { SocketProvider } from './Context/SocketContext.jsx'
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <SocketProvider>
       <App />
     </SocketProvider>
-  </StrictMode>,
+  // {/* </StrictMode>, */}
 )

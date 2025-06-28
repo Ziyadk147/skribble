@@ -6,7 +6,7 @@ const io = new Server({
 
 let currentCanvas = null;
 let gamePlayers = [];
-
+let messageLog = [];
 io.on('connection', function (socket) {
     console.log("NEW CLIENT CONNECTED " , socket.id);
     io.emit('currentPlayers' , gamePlayers)
@@ -38,6 +38,21 @@ io.on('connection', function (socket) {
         console.log("Broadcasting canvasImage...");
         socket.broadcast.emit('canvasImage', data);
     });
+
+  socket.on("sendMessage", (data) => {
+    console.log(data);
+    const messageData = {
+        senderName: data.name,
+        socketid: socket.id,
+        message: data.message
+    };
+
+    messageLog.push(messageData);
+
+    // Send only the new message to all connected clients
+    io.emit("messageUpdate", messageData);
+});
+
 })
 
 

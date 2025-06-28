@@ -8,7 +8,7 @@ export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [currentPlayer , setCurrentPlayer] = useState({});
   const [allPlayers , setAllPlayers ] = useState([]);
-
+  const [messages , setMessages] = useState([]);
 
   useEffect(() => {
     console.log("currentPlayer " , currentPlayer  , "ALL " , allPlayers)
@@ -27,6 +27,10 @@ export const SocketProvider = ({ children }) => {
       setCurrentPlayer(data);
     }
   }, []);
+
+const handleAddMessage = useCallback((data) => {
+  setMessages((prev) => [...prev, data]);
+}, []);
 
   const handleRemovePlayer = useCallback( (data) => {
     setAllPlayers((prev) => prev.filter((item) => item.socketid !== data.socketid));
@@ -50,7 +54,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   return (
-    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , handleRemovePlayer , allPlayers , handleTallyPlayers,  handleAddPlayer }}>
+    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , messages, handleRemovePlayer ,handleAddMessage, allPlayers , handleTallyPlayers,  handleAddPlayer }}>
       {children}
     </SocketContext.Provider>
   );

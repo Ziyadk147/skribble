@@ -195,8 +195,8 @@ const Board = ()  => {
             <div className="flex flex-row">
                  <canvas
                     ref={canvasRef}
-                    width={windowSize[0] > 600 ? 600 : 300}
-                    height={windowSize[1] > 400 ? 400 : 200}
+                    width={windowSize[0] > 600 ? 1000 : 300}
+                    height={windowSize[1] > 400 ? 600 : 200}
                     className="bg-white"
                 />
             </div>
