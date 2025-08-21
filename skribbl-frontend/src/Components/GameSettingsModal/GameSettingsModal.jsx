@@ -8,7 +8,7 @@ export const GameSettingsModal = ({ onSubmit, onClose }) => {
         newWords[index] = value;
         setCustomWords(newWords);
     };
-    const { socketRef } = useContext(SocketContext);
+    const { socketRef , setShowGameSettingsModal } = useContext(SocketContext);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -44,6 +44,7 @@ export const GameSettingsModal = ({ onSubmit, onClose }) => {
             if(socketRef.current){
                 socketRef.current.emit('updateGameSettings' , data)
             }
+            setShowGameSettingsModal(false);
         }
     })
 
@@ -115,17 +116,10 @@ export const GameSettingsModal = ({ onSubmit, onClose }) => {
                     {/* Buttons */}
                     <div className="flex justify-between mt-4">
                         <button
-                            type="button"
-                            onClick={onClose}
-                            className="bg-gray-300 text-black py-2 px-4 rounded hover:bg-gray-400 transition"
-                        >
-                            Cancel
-                        </button>
-                        <button
                             type="submit"
-                            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+                            className="bg-blue-500 text-white py-2 px-4 w-full rounded hover:bg-blue-600 transition"
                         >
-                            Start Game
+                            Save Settings
                         </button>
                     </div>
                 </form>

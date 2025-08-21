@@ -10,16 +10,19 @@ export const SocketProvider = ({ children }) => {
   const [allPlayers , setAllPlayers ] = useState([]);
   const [showGameSettingsModal , setShowGameSettingsModal] = useState(false);
   const [gameSettings , setGameSettings] = useState({});
-
+  const [isGameStarted , setIsGameStarted] = useState(false);
   useEffect(() => {
-    if(currentPlayer?.isOwner === true){
+    if(currentPlayer?.isOwner === true && Object.keys(gameSettings).length === 0){
       setShowGameSettingsModal(true)
     }
   } , [currentPlayer , allPlayers ])
   
   useEffect(() => {
-    console.log(gameSettings , "ASD")
-  } , [gameSettings])
+    console.log(isGameStarted , "ASD")
+  } , [isGameStarted])
+  const handleGameStart = useCallback((data) => {
+    setIsGameStarted(true)
+  } , [])
   const handleAddGameSettings = useCallback((data) => {
     setGameSettings(data);
   } , [])
@@ -59,7 +62,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   return (
-    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , handleRemovePlayer , allPlayers , handleTallyPlayers,  handleAddPlayer  , showGameSettingsModal , handleAddGameSettings , gameSettings}}>
+    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , handleRemovePlayer , allPlayers , handleTallyPlayers,  handleAddPlayer  , showGameSettingsModal , handleAddGameSettings , gameSettings , setShowGameSettingsModal , handleGameStart , isGameStarted} }>
       {children}
     </SocketContext.Provider>
   );

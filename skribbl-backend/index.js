@@ -36,9 +36,12 @@ io.on('connection', function (socket) {
     })
     socket.on("updateGameSettings" , (data) => {
         gameSettings = data;
-        socket.broadcast.emit("gameSettingsUpdate" , {gameSettings})
+        io.emit("gameSettingsUpdate" , {gameSettings})
     });
-
+    socket.on('gameStarted' , (data) => {
+        io.emit("gameStarted" , data);
+        console.log("game started ")
+    })
 
     socket.on("disconnect" , () => {
         const disconnectedPlayer = gamePlayers.find((item) => item.socketid === socket.id);
