@@ -8,12 +8,24 @@ export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [currentPlayer , setCurrentPlayer] = useState({});
   const [allPlayers , setAllPlayers ] = useState([]);
-
-
+  const [showGameSettingsModal , setShowGameSettingsModal] = useState(false);
+  const [gameSettings , setGameSettings] = useState({});
+  const [isGameStarted , setIsGameStarted] = useState(false);
   useEffect(() => {
-    console.log("currentPlayer " , currentPlayer  , "ALL " , allPlayers)
+    if(currentPlayer?.isOwner === true && Object.keys(gameSettings).length === 0){
+      setShowGameSettingsModal(true)
+    }
   } , [currentPlayer , allPlayers ])
   
+  useEffect(() => {
+    console.log(isGameStarted , "ASD")
+  } , [isGameStarted])
+  const handleGameStart = useCallback((data) => {
+    setIsGameStarted(true)
+  } , [])
+  const handleAddGameSettings = useCallback((data) => {
+    setGameSettings(data);
+  } , [])
   const handleAddPlayer = useCallback((data) => {
     setAllPlayers((prev) => {
       const alreadyExists = prev.some(p => p.socketid === data.socketid);
@@ -50,7 +62,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   return (
-    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , handleRemovePlayer , allPlayers , handleTallyPlayers,  handleAddPlayer }}>
+    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , handleRemovePlayer , allPlayers , handleTallyPlayers,  handleAddPlayer  , showGameSettingsModal , handleAddGameSettings , gameSettings , setShowGameSettingsModal , handleGameStart , isGameStarted} }>
       {children}
     </SocketContext.Provider>
   );

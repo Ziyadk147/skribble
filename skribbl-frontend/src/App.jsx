@@ -3,15 +3,22 @@ import { Board } from './Components/Board/Board'
 import { PlayerCard } from './Components/PlayerCard/PlayerCard'
 import { UserDetailInputModal } from './Components/UserDetailInputModal/UserDetailInputModal';
 import { SocketContext } from './Context/SocketContext';
+import { GameSettingsModal } from './Components/GameSettingsModal/GameSettingsModal';
 function App() {
   const [showModal , setShowModal] = useState(true)
-  const {socketRef , connectSocketServer,username ,currentPlayer ,handleTallyPlayers , handleRemovePlayer ,   handleAddPlayer } = useContext(SocketContext)
+  const {socketRef , connectSocketServer,username ,currentPlayer ,handleTallyPlayers , handleRemovePlayer ,   handleAddPlayer  , showGameSettingsModal , handleAddGameSettings , handleGameStart} = useContext(SocketContext)
   
   useEffect(() => {
     if(!socketRef.current ||!socketRef.current.connected  ){
       connectSocketServer("http://localhost:5000/")
     }
   }, [socketRef])
+
+  const handleGameStartClick = () => {
+    if(socketRef.current){
+      socketRef.current.emit("gameStarted" , true);
+    }
+  }
 
   useEffect(() => {
   if (!socketRef.current) return;
@@ -40,6 +47,12 @@ function App() {
     console.log(data , "YALLY")
     handleTallyPlayers(data);
   });
+  socket.on("gameSettingsUpdate" , (data) => {
+    handleAddGameSettings(data);
+  })
+  socket.on("gameStarted" , (data) => {
+    handleGameStart()
+  })
   return () => {
     socket.off("playerJoin", handlePlayerJoin);
   };
@@ -50,13 +63,24 @@ function App() {
       {showModal && (
         <UserDetailInputModal setShowModal={setShowModal} />
       )}
-
+      {showGameSettingsModal && (
+        <GameSettingsModal />
+      )}
+      
       <div className="bg-stone-800 flex flex-col lg:flex-row lg:justify-between h-screen w-screen">
+        
         <div className="flex-col h-[41vh] mt-5 w-[20rem] hidden lg:flex">
           <PlayerCard username={username} />
         </div>
         <div className="flex flex-col flex-1">
-          <Board username={username} />
+          <>
+             <button className='text-dark bg-slate-200'
+              onClick={handleGameStartClick}
+             >
+              start
+            </button>
+                <Board username={username} />   
+          </>
         </div>
         <div className="mobile lg:hidden md:hidden">
           <div className="flex h-[20vh] flex-row w-1/2">
