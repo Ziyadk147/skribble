@@ -8,7 +8,7 @@ const Board = ()  => {
     const colors = ['black', 'red', 'blue', 'green', 'orange'];
     const [color, setColor] = useState('black');
 
-    const {socketRef} = useContext(SocketContext)
+    const {socketRef , isGameStarted} = useContext(SocketContext)
 
     useEffect(() => {
         if(socketRef.current?.connected) {
@@ -64,6 +64,8 @@ const Board = ()  => {
         }
     }
     useEffect(() => {
+          if (!isGameStarted) return; // Exit early if game hasn't started
+
         //drawing states
         let isDrawing = false;
         let lastX = 0;
@@ -180,7 +182,7 @@ const Board = ()  => {
                 canvas.removeEventListener('touchcancel', handleTouchStop);
             }
         }
-    } , [color])
+    } , [color , isGameStarted])
 
     const clearCanvas = () => {
         const canvas = canvasRef.current;

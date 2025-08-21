@@ -5,9 +5,10 @@ import { UserDetailInputModal } from './Components/UserDetailInputModal/UserDeta
 import { SocketContext } from './Context/SocketContext';
 import { ChatContainer } from './Components/ChatContainer/ChatContainer';
 import { WordHeader } from './Components/WordHeader/WordHeader';
+import { GameSettingsModal } from './Components/GameSettingsModal/GameSettingsModal';
 function App() {
   const [showModal, setShowModal] = useState(true);
-  const { socketRef, connectSocketServer, username, handleAddMessage,handleTallyPlayers, handleCorrectGuessedPlayer,  handleRemovePlayer, handleAddPlayer ,handleSetWords} = useContext(SocketContext);
+  const { socketRef, connectSocketServer, username, handleAddMessage,handleTallyPlayers, handleCorrectGuessedPlayer,  handleRemovePlayer, handleAddPlayer ,handleSetWords , showGameSettingsModal , handleAddGameSettings , handleGameStart} = useContext(SocketContext);
 
   // Connect socket
   useEffect(() => {
@@ -15,6 +16,12 @@ function App() {
       connectSocketServer("http://localhost:5000/");
     }
   }, [socketRef]);
+
+  const handleGameStartClick = () => {
+    if(socketRef.current){
+      socketRef.current.emit("gameStarted" , true);
+    }
+  }
 
   // Setup event listeners
   useEffect(() => {
@@ -52,7 +59,13 @@ function App() {
       handleCorrectGuessedPlayer(data)
     })
 
-    return () => {
+    socket.on("gameSettingsUpdate" , (data) => {
+    handleAddGameSettings(data);
+  })
+  socket.on("gameStarted" , (data) => {
+    handleGameStart()
+  })
+  return () => {
       socket.off("playerJoin", handlePlayerJoin);
       socket.off("playerLeft");
       socket.off("currentPlayers");
@@ -63,9 +76,13 @@ function App() {
   return (
     <>
       {showModal && <UserDetailInputModal setShowModal={setShowModal} />}
-
+      {showGameSettingsModal && (
+        <GameSettingsModal />
+      )}
+      
       <div className="bg-stone-800 flex flex-col h-screen w-screen">
         {/* Header */}
+        
         <div className="flex flex-row">
           <WordHeader />
         </div>
@@ -78,8 +95,15 @@ function App() {
 
           {/* Game Board */}
           <div className="flex flex-1 justify-center items  -center p-4">
-            <Board username={username} />
-          </div>
+            <>
+             <button className='text-dark bg-slate-200'
+              onClick={handleGameStartClick}
+             >
+              start
+            </button>
+                <Board username={username} />   
+            </>
+        </div>
            <div className="hidden lg:flex flex-col w-[20rem] p-4">
             <ChatContainer />
           </div>

@@ -8,13 +8,28 @@ export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [currentPlayer , setCurrentPlayer] = useState({});
   const [allPlayers , setAllPlayers ] = useState([]);
+  const [showGameSettingsModal , setShowGameSettingsModal] = useState(false);
+  const [gameSettings , setGameSettings] = useState({});
+  const [isGameStarted , setIsGameStarted] = useState(false);
   const [messages , setMessages] = useState([]);
   const [selectedWordData , setSelectedWordData] = useState({});
   const [correctGuessedPlayers , setCorrectGuessedPlayers] = useState([]);
+
   useEffect(() => {
-    console.log("currentPlayer " , currentPlayer  , "ALL " , allPlayers)
+    if(currentPlayer?.isOwner === true && Object.keys(gameSettings).length === 0){
+      setShowGameSettingsModal(true)
+    }
   } , [currentPlayer , allPlayers ])
   
+  useEffect(() => {
+    console.log(isGameStarted , "ASD")
+  } , [isGameStarted])
+  const handleGameStart = useCallback((data) => {
+    setIsGameStarted(true)
+  } , [])
+  const handleAddGameSettings = useCallback((data) => {
+    setGameSettings(data);
+  } , [])
   const handleAddPlayer = useCallback((data) => {
     setAllPlayers((prev) => {
       const alreadyExists = prev.some(p => p.socketid === data.socketid);
@@ -65,7 +80,7 @@ const handleAddMessage = useCallback((data) => {
   };
 
   return (
-    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , setCurrentPlayer, handleCorrectGuessedPlayer, correctGuessedPlayers , messages, handleRemovePlayer ,handleAddMessage, allPlayers , handleTallyPlayers,  handleAddPlayer  , handleSetWords , selectedWordData}}>
+    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , setCurrentPlayer, handleCorrectGuessedPlayer, correctGuessedPlayers , messages, handleRemovePlayer ,handleAddMessage, allPlayers , handleTallyPlayers,  handleAddPlayer  , handleSetWords , selectedWordData , showGameSettingsModal , handleAddGameSettings , gameSettings , setShowGameSettingsModal , handleGameStart , isGameStarted} }>
       {children}
     </SocketContext.Provider>
   );
