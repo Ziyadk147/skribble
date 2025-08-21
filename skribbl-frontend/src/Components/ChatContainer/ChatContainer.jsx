@@ -1,13 +1,12 @@
-import { useContext, useEffect  , useRef} from "react"
+import { useContext, useEffect , useState , useRef} from "react"
 import { IndividualChatBox } from "../IndividualChatBox/IndividualChatBox"
 import {useFormik} from "formik"
 import { SocketContext } from "../../Context/SocketContext"
 
 const ChatContainer = () => {
-    const { socketRef  ,currentPlayer , messages} = useContext(SocketContext)
+    const { socketRef  ,currentPlayer ,setCurrentPlayer , correctGuessedPlayers, messages , selectedWordData} = useContext(SocketContext)
     
     const scrollToBottom = useRef(null);
-
     useEffect(() => {
         if(scrollToBottom.current){
             scrollToBottom.current.scrollIntoView({behavior:"smooth"})
@@ -21,6 +20,22 @@ const ChatContainer = () => {
         }
         socketRef.current.emit("sendMessage" , payload);
     }
+    const checkIfMessageIsCorrectAnswers = (message) => {
+        if(selectedWordData && (message === selectedWordData?.randomWord)) {
+            return true;
+        }
+        else return false;
+    }
+    const markCorrectPlayer = () => {
+        const payload = {
+            ...currentPlayer , 
+            isCorrect: true,
+        }
+        // setIsAnswerCorrect(true);
+        if(socketRef.current){
+            socketRef.current.emit("correctGuessed" , payload )
+        }
+    }
     const formik = useFormik({
         initialValues: {
             textMessage : ""
@@ -32,6 +47,9 @@ const ChatContainer = () => {
         },
         onSubmit: (data) => {
             console.log(data);
+            if(checkIfMessageIsCorrectAnswers(data.textMessage)){
+                markCorrectPlayer();
+            }
             sendMessage(data.textMessage);
             formik.setFieldValue("textMessage" , "")
         }

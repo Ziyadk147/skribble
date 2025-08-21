@@ -9,7 +9,8 @@ export const SocketProvider = ({ children }) => {
   const [currentPlayer , setCurrentPlayer] = useState({});
   const [allPlayers , setAllPlayers ] = useState([]);
   const [messages , setMessages] = useState([]);
-
+  const [selectedWordData , setSelectedWordData] = useState({});
+  const [correctGuessedPlayers , setCorrectGuessedPlayers] = useState([]);
   useEffect(() => {
     console.log("currentPlayer " , currentPlayer  , "ALL " , allPlayers)
   } , [currentPlayer , allPlayers ])
@@ -39,6 +40,16 @@ const handleAddMessage = useCallback((data) => {
   const handleTallyPlayers = useCallback((data) => {
     setAllPlayers(data);
   } , [])
+
+  const handleSetWords =useCallback( (data) => {
+    setSelectedWordData(data);
+    console.log(data , "ASDASD")
+  } , [])
+
+  const handleCorrectGuessedPlayer = useCallback((data) => {
+      console.log("DATA ," ,data)
+      setCorrectGuessedPlayers((prev) => [...prev, data])
+  } , [])
   const connectSocketServer = (serverAddress) => {
     if (!socketRef.current) {
       socketRef.current = io(serverAddress);
@@ -54,7 +65,7 @@ const handleAddMessage = useCallback((data) => {
   };
 
   return (
-    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , messages, handleRemovePlayer ,handleAddMessage, allPlayers , handleTallyPlayers,  handleAddPlayer }}>
+    <SocketContext.Provider value={{ socketRef, connectSocketServer,currentPlayer , setCurrentPlayer, handleCorrectGuessedPlayer, correctGuessedPlayers , messages, handleRemovePlayer ,handleAddMessage, allPlayers , handleTallyPlayers,  handleAddPlayer  , handleSetWords , selectedWordData}}>
       {children}
     </SocketContext.Provider>
   );
