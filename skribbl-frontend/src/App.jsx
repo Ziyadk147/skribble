@@ -3,9 +3,10 @@ import { Board } from './Components/Board/Board'
 import { PlayerCard } from './Components/PlayerCard/PlayerCard'
 import { UserDetailInputModal } from './Components/UserDetailInputModal/UserDetailInputModal';
 import { SocketContext } from './Context/SocketContext';
+import { GameSettingsModal } from './Components/GameSettingsModal/GameSettingsModal';
 function App() {
   const [showModal , setShowModal] = useState(true)
-  const {socketRef , connectSocketServer,username ,currentPlayer ,handleTallyPlayers , handleRemovePlayer ,   handleAddPlayer } = useContext(SocketContext)
+  const {socketRef , connectSocketServer,username ,currentPlayer ,handleTallyPlayers , handleRemovePlayer ,   handleAddPlayer  , showGameSettingsModal , handleAddGameSettings} = useContext(SocketContext)
   
   useEffect(() => {
     if(!socketRef.current ||!socketRef.current.connected  ){
@@ -40,6 +41,9 @@ function App() {
     console.log(data , "YALLY")
     handleTallyPlayers(data);
   });
+  socket.on("gameSettingsUpdate" , (data) => {
+    handleAddGameSettings(data);
+  })
   return () => {
     socket.off("playerJoin", handlePlayerJoin);
   };
@@ -49,6 +53,9 @@ function App() {
     <>
       {showModal && (
         <UserDetailInputModal setShowModal={setShowModal} />
+      )}
+      {showGameSettingsModal && (
+        <GameSettingsModal />
       )}
 
       <div className="bg-stone-800 flex flex-col lg:flex-row lg:justify-between h-screen w-screen">
