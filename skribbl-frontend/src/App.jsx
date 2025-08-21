@@ -4,9 +4,10 @@ import { PlayerCard } from './Components/PlayerCard/PlayerCard';
 import { UserDetailInputModal } from './Components/UserDetailInputModal/UserDetailInputModal';
 import { SocketContext } from './Context/SocketContext';
 import { ChatContainer } from './Components/ChatContainer/ChatContainer';
+import { WordHeader } from './Components/WordHeader/WordHeader';
 function App() {
   const [showModal, setShowModal] = useState(true);
-  const { socketRef, connectSocketServer, username, handleAddMessage,handleTallyPlayers, handleRemovePlayer, handleAddPlayer } = useContext(SocketContext);
+  const { socketRef, connectSocketServer, username, handleAddMessage,handleTallyPlayers, handleCorrectGuessedPlayer,  handleRemovePlayer, handleAddPlayer ,handleSetWords} = useContext(SocketContext);
 
   // Connect socket
   useEffect(() => {
@@ -44,6 +45,12 @@ function App() {
     socket.on("messageUpdate" , (data) => {
       handleAddMessage(data);
     })
+    socket.on("wordUpdate" , (data) => {
+      handleSetWords(data);
+    })
+    socket.on("playerGuessedCorrectly" , (data) => {
+      handleCorrectGuessedPlayer(data)
+    })
 
     return () => {
       socket.off("playerJoin", handlePlayerJoin);
@@ -59,8 +66,8 @@ function App() {
 
       <div className="bg-stone-800 flex flex-col h-screen w-screen">
         {/* Header */}
-        <div className="flex justify-center items-center bg-gray-900 text-white text-2xl py-4">
-          Hello
+        <div className="flex flex-row">
+          <WordHeader />
         </div>
 
         <div className="flex flex-1 flex-col lg:flex-row">
@@ -70,7 +77,7 @@ function App() {
           </div>
 
           {/* Game Board */}
-          <div className="flex flex-1 justify-center items-center p-4">
+          <div className="flex flex-1 justify-center items  -center p-4">
             <Board username={username} />
           </div>
            <div className="hidden lg:flex flex-col w-[20rem] p-4">
